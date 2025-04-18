@@ -1,0 +1,92 @@
+df=pd.read_csv("tourist_expenditure_dataset.csv")
+df.isnull().sum()
+df.dropna(axis=0,inplace=True)
+df.isnull().sum()
+df.dtypes
+df = pd.read_csv("Tourist_expenditure_dataset.csv")
+print(df.columns)
+for col in df.select_dtypes(include=["number"]).columns:  
+    Q1 = df[col].quantile(0.25)
+    Q3 = df[col].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    df = df[(df[col] >= lower_bound) & (df[col] <= upper_bound)]
+df["Tourist ID"]=df["Tourist ID"].astype(int)
+df["Age of Tourist"]=df["Age of Tourist"].astype(int)
+df["Trip Duration"]=df["Trip Duration"].astype(int)
+
+
+total_expenditure_data = df["Total Expenditure"].to_numpy()
+total_expenditure = np.nansum(total_expenditure_data)
+total_expenditure = np.nansum(total_expenditure_data)
+print("total expenditure is:",total_expenditure)
+
+total_expenditure_data = df["Total Expenditure"].to_numpy()
+country_data = df["Country of Origin"].to_numpy()
+season_data = df["Season"].to_numpy()
+
+unique_countries = np.unique(country_data) 
+country_expenditure = {country: np.nansum(total_expenditure_data[country_data == country]) for country in unique_countries}
+print("\nTotal Expenditure by Country of Origin:")
+for country, exp in country_expenditure.items():
+    print(f"{country}: {exp}")
+
+unique_seasons = np.unique(season_data)  
+season_expenditure = {season: np.nansum(total_expenditure_data[season_data == season]) for season in unique_seasons}
+print("\nTotal Expenditure by Season:")
+for season, exp in season_expenditure.items():
+    print(f"{season}: {exp}")
+
+categories = ["Hotel Expenditure", "Food Expenditure", "Entertainment Expenditure", "Transport Expenditure"]
+expenditure_data = df[categories].to_numpy()
+total_expenditure_data = df["Total Expenditure"].to_numpy()
+category_totals = np.nansum(expenditure_data, axis=0)
+total_expenditure = np.nansum(total_expenditure_data)
+category_percentages = (category_totals / total_expenditure) * 100
+for cat, perc in zip(categories, category_percentages):
+    print(f"{cat}: {perc:.2f}%")
+
+
+
+
+ages = np.array(df['Age of Tourist'])
+expenditures = np.array(df['Total Expenditure'])
+age_bins = np.array([18, 25, 35, 45, 55, 65, 75, 100])
+age_labels = ["18-25", "26-35", "36-45", "46-55", "56-65", "66-75", "76+"]
+age_indices = np.digitize(ages, age_bins, right=False) - 1  
+unique_age_groups = np.arange(len(age_labels))  
+age_expenditure = np.array([np.sum(expenditures[age_indices == i]) for i in unique_age_groups])
+age_count = np.array([np.sum(age_indices == i) for i in unique_age_groups])
+avg_expenditure_age = np.divide(age_expenditure, age_count, out=np.zeros_like(age_expenditure), where=age_count > 0)
+print("Age-wise Spending Trends:")
+for i, age_group in enumerate(age_labels):
+    print(f"Age Group {age_group}: Total Expenditure = {age_expenditure[i]:.2f}, Average Expenditure = {avg_expenditure_age[i]:.2f}")
+
+
+max_age_group_index = np.argmax(avg_expenditure_age)
+highest_spending_age_group = age_labels[max_age_group_index]
+max_gender_index = np.argmax(avg_expenditure_gender)
+highest_spending_gender = unique_genders[max_gender_index]
+print(f"\nOlder vs. Younger Tourists: The highest spending age group is **{highest_spending_age_group}**.\n")
+print("Gender-based Spending Differences:")
+for i, gender in enumerate(unique_genders):
+    print(f"Gender {gender}: Total Expenditure = {gender_expenditure[i]:.2f}, Average Expenditure = {avg_expenditure_gender[i]:.2f}")
+print(f"\nMales vs. Females: The higher spending gender is **{highest_spending_gender}**.\n")
+
+
+
+countries = np.array(df["Country of Origin"])
+trip_durations = np.array(df["Trip Duration"])
+seasons = np.array(df["Season"])
+unique_countries = np.unique(countries)
+avg_trip_duration_by_country = np.array([np.mean(trip_durations[countries == country]) for country in unique_countries])
+unique_seasons = np.unique(seasons)
+avg_trip_duration_by_season = np.array([np.mean(trip_durations[seasons == season]) for season in unique_seasons])
+print("Average Trip Duration in Country:")
+for country, avg_duration in zip(unique_countries, avg_trip_duration_by_country):
+    print(f"{country}: {avg_duration:.2f} days")
+print("\nAverage Trip Duration in Season:")
+for season, avg_duration in zip(unique_seasons, avg_trip_duration_by_season):
+    print(f"{season}: {avg_duration:.2f} days")
+
